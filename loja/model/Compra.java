@@ -6,6 +6,7 @@
 package atividade_20180814.loja.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
  */
 public class Compra {
     private int idCompra;
+    private Calendar dataDaCompra;
     private List<ItemCompra> itens;
     
     public Compra(){
@@ -48,5 +50,15 @@ public class Compra {
         this.itens.add(item);
         return true;
     }
+
+    public Calendar getDataDaCompra() {
+        return dataDaCompra;
+    }
+
+    public void setDataDaCompra(Calendar dataDaCompra) {
+        this.dataDaCompra = dataDaCompra;
+    }
+    
+    
     
 }

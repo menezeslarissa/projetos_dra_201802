@@ -13,11 +13,19 @@ import atividade_20180814.loja.model.Compra;
 import atividade_20180814.loja.model.ItemCompra;
 import atividade_20180814.loja.model.Produto;
 import atividade_20180814.loja.model.TableModelItemCompra;
+import atividade_20180814.loja.util.DataUtil;
 import atividade_20180814.loja.view.ItemCompraView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.input.DataFormat;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -27,21 +35,21 @@ import javax.swing.JOptionPane;
  */
 public class ItemCompraController {
 
-    private ItemCompra item;
-    private ItemCompraView view;
-    private Compra c;
-    private Vector<Produto> produtos;
+    private final ItemCompra item;
+    private final ItemCompraView view;
+    private final Compra c;
+    private final Vector<Produto> produtos;
     private ItemCompraDAO dao;
     private TableModelItemCompra modelo;
     private Vector<ItemCompra> itens = new Vector<>();
 
-    public ItemCompraController(ItemCompra i, ItemCompraView view) {
-        this.c = new Compra();
+    public ItemCompraController(ItemCompra i, ItemCompraView view, Compra compra) {
+        this.c = compra;
         this.item = i;
         this.view = view;
         produtos = new Vector<>();
 
-        iniciarCompra();
+        finalizarCompra();
         carregarProdutos();
         limparTabela();
         carregarMenuPopUp();
@@ -50,46 +58,36 @@ public class ItemCompraController {
         view.AddActionAdicionar(new AdicionarItem());
         view.AddActionVoltar(new VoltarListener());
         view.AddActionFinalizar(new FinalizarListener());
-       
+
     }
 
-   
+    //açao de adiconar item
     class AdicionarItem implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                camposVazios();
-                ItemCompra item = new ItemCompra();
-                item.setCompra(c);
-                item.setProduto(getProdutoSelecionado());
-                System.out.println(getProdutoSelecionado().getIdProduto());
-                System.out.println(item.getProduto().getDescricao() + item.getProduto().getIdProduto());
-                item.setQuantidade(Integer.parseInt(view.getQuantidade().getText()));
-                item.setValorProdutoDiaDaCompra(Double.parseDouble(view.getValor().getText()));
-                c.addItemLista(item);
-                dao = new ItemCompraDAO();
-                dao.registrarItem(item);
-                limparCampos();
-                carregarTabelaTodosItens();
-                //  carregarMenuPopUp();
-                view.setValorTotalDaCompra(Double.toString(c.calcValorTotal()));
-            } catch (ItemCompraException ex) {
-                System.out.println(ex.getMessage());
+                addItem();
+            } catch (NumberFormatException  ex) {
+                view.msgFinal("Erro no preenchimento dos campos!", "Erro" ,JOptionPane.ERROR_MESSAGE);
             }
 
         }
 
     }
 
+    //açao de finalizar compra
     class FinalizarListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+
             if (c.calcValorTotal() <= 0) {
                 view.showMessage("Adicione itens para finalizar a compra!");
             } else {
-                view.msgFinal("ID Compra = " + c.getIdCompra() + "\nValor Total da Compra = " + c.calcValorTotal(), JOptionPane.INFORMATION_MESSAGE);
+                finalizarCompra();
+                view.msgFinal("Compra finalizada com sucesso!", "Compra Fechada", JOptionPane.INFORMATION_MESSAGE);
+                view.msgFinal("ID Compra = " + c.getIdCompra() + "\nData: " + DataUtil.ConverterDataEmTexto(c.getDataDaCompra()) + "\nValor Total da Compra = " + c.calcValorTotal(), "Compra Fechada", JOptionPane.INFORMATION_MESSAGE);
                 view.dispose();
             }
 
@@ -97,15 +95,45 @@ public class ItemCompraController {
 
     }
 
+    //açao de voltar
+    class VoltarListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.dispose();
+        }
+
+    }
+
+    private void addItem(){
+        ItemCompra item = new ItemCompra();
+        item.setCompra(c);
+        item.setProduto(getProdutoSelecionado());
+        System.out.println(getProdutoSelecionado().getIdProduto());
+        System.out.println(item.getProduto().getDescricao() + item.getProduto().getIdProduto());
+        item.setQuantidade(Integer.parseInt(view.getQuantidade().getText()));
+        item.setValorProdutoDiaDaCompra(Double.parseDouble(view.getValor().getText()));
+        c.addItemLista(item);
+        dao = new ItemCompraDAO();
+        try {
+            dao.registrarItem(item);
+        } catch (SQLException ex) {
+            view.showMessage("Produto já foi adicionado!");
+        }
+        limparCampos();
+        carregarTabelaTodosItens();
+        //  carregarMenuPopUp();
+        view.setValorTotalDaCompra(Double.toString(c.calcValorTotal()));
+    }
+
     public void carregarTabelaTodosItens() {
         ItemCompraDAO dao = new ItemCompraDAO();
         itens = dao.listarItensCompraAtual(c.getIdCompra());
         modelo = new TableModelItemCompra(itens);
         view.setTableModel(modelo);
-        //carregarMenuPopUp();
     }
 
-    public void limparTabela() {
+    private void limparTabela() {
         ItemCompraDAO dao = new ItemCompraDAO();
         itens = dao.listarItensCompra();
         itens.clear();
@@ -114,22 +142,13 @@ public class ItemCompraController {
 
     }
 
-    public void carregarProdutos() {
+    private void carregarProdutos() {
         view.getCombo().removeAllItems();
         ProdutoDAO dao = new ProdutoDAO();
         for (Produto p : dao.listarProduto()) {
             view.getCombo().addItem(p.getDescricao());
             this.produtos.add(p);
         }
-    }
-
-    class VoltarListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            view.dispose();
-        }
-
     }
 
     private void realizarAcao(MouseEvent evt) {
@@ -146,7 +165,7 @@ public class ItemCompraController {
         realizarAcao(evt);
     }
 
-    public void carregarMenuPopUp() {
+    private void carregarMenuPopUp() {
         JMenuItem itemExcluir = new JMenuItem("Excluir");
 
         itemExcluir.addActionListener(new ActionListener() {
@@ -178,26 +197,26 @@ public class ItemCompraController {
         return this.produtos.get(view.getCombo().getSelectedIndex());
     }
 
-    public void iniciarCompra() {
+    private void finalizarCompra() {
+        //this.c = new Compra();
         CompraDAO dao = new CompraDAO();
-        c.setIdCompra(dao.finalizarCompra(c));
+        dao.finalizarCompra(c);
+        c.setIdCompra(dao.getIdCompra());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dao.getDataCompra());
+        c.setDataDaCompra(cal);
+        
         System.out.println(c.getIdCompra());
     }
 
-    public Vector<ItemCompra> getLista(){
+    public Vector<ItemCompra> getLista() {
         ItemCompraDAO dao = new ItemCompraDAO();
         return dao.listarItensCompra();
     }
+
     public void limparCampos() {
         view.getQuantidade().setText("");
         view.getValor().setText("");
-    }
-
-    public void camposVazios() throws ItemCompraException {
-        if (view.getQuantidade().getText().equals("") || view.getQuantidade().getText().equals("") || view.getValor().getText().equals("")
-                || view.getValor().getText().equals("")) {
-            throw new ItemCompraException(view, "Preencha todos os campos!");
-        }
     }
 
 }

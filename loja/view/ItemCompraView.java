@@ -27,9 +27,9 @@ public class ItemCompraView extends javax.swing.JFrame {
 
     private ProdutoController c;
     private Produto p;
-  
-    private ItemCompra i;
 
+    private ItemCompra i;
+    private Compra compra;
 
     /**
      * Creates new form CadastrarProdutoVIew
@@ -38,9 +38,9 @@ public class ItemCompraView extends javax.swing.JFrame {
         initComponents();
         this.p = new Produto();
         i = new ItemCompra();
-       
-        
-        ItemCompraController c = new ItemCompraController(i, this);
+        compra = new Compra();
+
+        ItemCompraController c = new ItemCompraController(i, this, compra);
 
     }
 
@@ -68,7 +68,7 @@ public class ItemCompraView extends javax.swing.JFrame {
         tableItens = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        comboBoxProdutos = new javax.swing.JComboBox<String>();
+        comboBoxProdutos = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         labelValorTotalCompra = new javax.swing.JLabel();
         btnFinalizarCompra = new javax.swing.JButton();
@@ -114,7 +114,7 @@ public class ItemCompraView extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setText("Novo Item");
 
-        comboBoxProdutos.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboBoxProdutos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 0, 0));
@@ -146,8 +146,6 @@ public class ItemCompraView extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(btnAdcItem)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnFinalizarCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(55, 55, 55)
                                 .addComponent(btnVoltar))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -155,7 +153,9 @@ public class ItemCompraView extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(66, 66, 66)
                                 .addComponent(comboBoxProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(20, 543, Short.MAX_VALUE))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnFinalizarCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(13, 13, 13))))
                     .addComponent(jSeparator2))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -167,7 +167,7 @@ public class ItemCompraView extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
                                     .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 616, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel3)
@@ -204,10 +204,15 @@ public class ItemCompraView extends javax.swing.JFrame {
                     .addComponent(labelValorTotalCompra))
                 .addGap(4, 4, 4)
                 .addComponent(jLabel5)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(comboBoxProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(comboBoxProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(btnFinalizarCompra)))
                 .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -219,8 +224,7 @@ public class ItemCompraView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnVoltar)
-                    .addComponent(btnAdcItem)
-                    .addComponent(btnFinalizarCompra))
+                    .addComponent(btnAdcItem))
                 .addContainerGap())
         );
 
@@ -232,8 +236,8 @@ public class ItemCompraView extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -256,10 +260,9 @@ public class ItemCompraView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnFinalizarCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinalizarCompraActionPerformed
-      
+
     }//GEN-LAST:event_btnFinalizarCompraActionPerformed
 
-    
     public JTextField getQuantidade() {
         return txtQtde;
     }
@@ -275,7 +278,7 @@ public class ItemCompraView extends javax.swing.JFrame {
     public void AddActionFinalizar(ActionListener actFinalizar) {
         btnFinalizarCompra.addActionListener(actFinalizar);
     }
-    
+
     public void AddActionVoltar(ActionListener actVoltar) {
         btnVoltar.addActionListener(actVoltar);
     }
@@ -284,14 +287,16 @@ public class ItemCompraView extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, msg);
     }
 
-    public void msgFinal(String msg, int i){
-        JOptionPane.showMessageDialog(rootPane, msg, "Compra Fechada", i);
-                
+    public void msgFinal(String msg, String title, int i) {
+        JOptionPane.showMessageDialog(rootPane, msg, title, i);
+
     }
+
     public void setTableModel(TableModelItemCompra modelo) {
         tableItens.setModel(modelo);
     }
-    public void setValorTotalDaCompra(String text){
+
+    public void setValorTotalDaCompra(String text) {
         labelValorTotalCompra.setText(text);
     }
 
@@ -307,9 +312,10 @@ public class ItemCompraView extends javax.swing.JFrame {
         return popupItens;
     }
 
-    public void setMenuPopup(JPopupMenu p){
+    public void setMenuPopup(JPopupMenu p) {
         tableItens.setComponentPopupMenu(p);
     }
+
     /**
      * @param args the command line arguments
      */
@@ -374,7 +380,4 @@ public class ItemCompraView extends javax.swing.JFrame {
     private javax.swing.JTextField txtValor;
     // End of variables declaration//GEN-END:variables
 
-    public void showMessageDialog(String string, int INFORMATION_MESSAGE) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

@@ -167,7 +167,7 @@ public class AlterarProdutoView extends javax.swing.JFrame {
     }
    
     public void AddActionVoltar(ActionListener actVoltar) {
-        botaoSalvar.addActionListener(actVoltar);
+        botaoVoltar.addActionListener(actVoltar);
     }
     public void setDescricao(String desc){
         txtDesc.setText(desc);

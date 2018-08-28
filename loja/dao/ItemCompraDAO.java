@@ -9,11 +9,13 @@ import atividade_20180814.loja.connection.FabricaConexao;
 import atividade_20180814.loja.model.Compra;
 import atividade_20180814.loja.model.ItemCompra;
 import atividade_20180814.loja.model.Produto;
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -27,7 +29,7 @@ public class ItemCompraDAO {
         this.connection = FabricaConexao.getConnection();
     }
 
-    public boolean registrarItem(ItemCompra item) {
+    public boolean registrarItem(ItemCompra item) throws MySQLIntegrityConstraintViolationException, SQLException{
         String sql = "insert into itemcompra (itemcompracompid, itemcompraproid, itemcompraqtde, itemcompravalor) values (?,?,?, ?)";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -38,10 +40,9 @@ public class ItemCompraDAO {
             ps.execute();
             connection.close();
             return true;
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+        } catch (MySQLIntegrityConstraintViolationException ex) {
+           throw new MySQLIntegrityConstraintViolationException(); 
         }
-
     }
     
     public Vector<ItemCompra> listarItensCompraAtual(int idCompra){

@@ -10,13 +10,10 @@ import atividade_20180814.loja.exception.ItemCompraException;
 import atividade_20180814.loja.model.Produto;
 import atividade_20180814.loja.model.TableModelProduto;
 import atividade_20180814.loja.view.AlterarProdutoView;
-import atividade_20180814.loja.view.Principal;
 import atividade_20180814.loja.view.ProdutoView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -51,23 +48,12 @@ public class ProdutoController {
         public void actionPerformed(ActionEvent e) {
 
             try {
-                camposVazios();
-                modelProduto.setDescricao(viewProd.getDescricao());
-                modelProduto.setQuantidade(viewProd.getQuantidade());
-                modelProduto.setValor(viewProd.getValor());
-
-                ProdutoDAO dao = new ProdutoDAO();
-                boolean cadastro = dao.addProduto(modelProduto);
-                if (cadastro) {
-                    viewProd.showMessage("Produto cadastrado com sucesso!");
-                } else {
-                    viewProd.showMessage("Cadastro nao realizado!");
-                }
+                addProduto();
                 limparCampos();
                 carregarTabela();
                 carregarMenuPopUp();
-            } catch (ItemCompraException ex) {
-                System.out.println(ex.getMessage());
+            } catch (NumberFormatException ex) {
+                viewProd.msgFinal("Erro no preenchimento dos campos!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
 
         }
@@ -103,12 +89,24 @@ public class ProdutoController {
         //System.out.println(viewProd.getTabela().getSelectedRow());
     }
 
-    public void carregarTodosProd() {
+    private void carregarTodosProd() {
         ProdutoDAO dao = new ProdutoDAO();
         modelo = new TableModelProduto(dao.listarProduto());
         viewProd.setTableModel(modelo);
         viewProd.getTabela().setComponentPopupMenu(viewProd.getPopup());
         //System.out.println(viewProd.getTabela().getSelectedRow());
+    }
+
+    private void addProduto() {
+        modelProduto.setDescricao(viewProd.getDescricao());
+        modelProduto.setQuantidade(viewProd.getQuantidade());
+        modelProduto.setValor(viewProd.getValor());
+
+        ProdutoDAO dao = new ProdutoDAO();
+        boolean cadastro = dao.addProduto(modelProduto);
+        if (cadastro == false) {
+            viewProd.showMessage("Cadastro nao realizado!");
+        }
     }
 
     private Produto selecionarProduto(MouseEvent evt) {
@@ -127,11 +125,6 @@ public class ProdutoController {
 
         }
         return modelProduto;
-    }
-
-    private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {
-        carregarTabela();
-        carregarMenuPopUp();
     }
 
     private void realizarAcao(MouseEvent evt) {
@@ -155,7 +148,7 @@ public class ProdutoController {
         return id;
     }
 
-    public void carregarMenuPopUp() {
+    private void carregarMenuPopUp() {
         viewProd.getPopup().removeAll();
         JMenuItem itemAlterar = new JMenuItem("Alterar");
         JMenuItem itemExcluir = new JMenuItem("Excluir");

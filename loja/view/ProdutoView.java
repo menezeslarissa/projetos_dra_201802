@@ -300,6 +300,11 @@ public class ProdutoView extends javax.swing.JFrame {
         return tableProdutos;
     }
 
+    public void msgFinal(String msg, String title, int i) {
+        JOptionPane.showMessageDialog(rootPane, msg, title, i);
+
+    }
+
     /**
      * @param args the command line arguments
      */
