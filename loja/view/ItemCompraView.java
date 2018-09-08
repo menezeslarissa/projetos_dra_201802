@@ -29,7 +29,7 @@ public class ItemCompraView extends javax.swing.JFrame {
     private Produto p;
 
     private ItemCompra i;
-    private Compra compra;
+   
 
     /**
      * Creates new form CadastrarProdutoVIew
@@ -38,9 +38,9 @@ public class ItemCompraView extends javax.swing.JFrame {
         initComponents();
         this.p = new Produto();
         i = new ItemCompra();
-        compra = new Compra();
+        
 
-        ItemCompraController c = new ItemCompraController(i, this, compra);
+        ItemCompraController c = new ItemCompraController(i, this);
 
     }
 

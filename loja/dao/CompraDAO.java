@@ -82,8 +82,8 @@ public class CompraDAO {
 
     public List<ItemCompra> consultarItensCompra(int idCompra){
         List<ItemCompra> itens = new ArrayList<>();
-        String sql = "select itemcompracompid, itemcompraproid, itemcompraqtde, itemcompravalor"
-                + "from itemcompra"
+        String sql = "select itemcompracompid, itemcompraproid, itemcompraqtde, itemcompravalor "
+                + "from itemcompra "
                 + "where itemcompracompid = ?";
         try{
             PreparedStatement st = connection.prepareStatement(sql);
@@ -105,7 +105,7 @@ public class CompraDAO {
         return itens;
     }
     
-    private Compra pesquisarCompraPorId(int idCompra){
+    public Compra pesquisarCompraPorId(int idCompra){
         String sql = "select compid, compdata from compra where compid = ?";
         Compra c;
         try {

@@ -8,24 +8,19 @@ package atividade_20180814.loja.controller;
 import atividade_20180814.loja.dao.CompraDAO;
 import atividade_20180814.loja.dao.ItemCompraDAO;
 import atividade_20180814.loja.dao.ProdutoDAO;
-import atividade_20180814.loja.exception.ItemCompraException;
 import atividade_20180814.loja.model.Compra;
 import atividade_20180814.loja.model.ItemCompra;
 import atividade_20180814.loja.model.Produto;
 import atividade_20180814.loja.model.TableModelItemCompra;
 import atividade_20180814.loja.util.DataUtil;
+import atividade_20180814.loja.view.FinalizarCompraView;
 import atividade_20180814.loja.view.ItemCompraView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.scene.input.DataFormat;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -37,14 +32,15 @@ public class ItemCompraController {
 
     private final ItemCompra item;
     private final ItemCompraView view;
-    private final Compra c;
+    public static Compra c;
     private final Vector<Produto> produtos;
     private ItemCompraDAO dao;
     private TableModelItemCompra modelo;
     private Vector<ItemCompra> itens = new Vector<>();
+    private static Integer idCompra;
 
-    public ItemCompraController(ItemCompra i, ItemCompraView view, Compra compra) {
-        this.c = compra;
+    public ItemCompraController(ItemCompra i, ItemCompraView view) {
+        //this.c = compra;
         this.item = i;
         this.view = view;
         produtos = new Vector<>();
@@ -68,27 +64,8 @@ public class ItemCompraController {
         public void actionPerformed(ActionEvent e) {
             try {
                 addItem();
-            } catch (NumberFormatException  ex) {
-                view.msgFinal("Erro no preenchimento dos campos!", "Erro" ,JOptionPane.ERROR_MESSAGE);
-            }
-
-        }
-
-    }
-
-    //açao de finalizar compra
-    class FinalizarListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-            if (c.calcValorTotal() <= 0) {
-                view.showMessage("Adicione itens para finalizar a compra!");
-            } else {
-                finalizarCompra();
-                view.msgFinal("Compra finalizada com sucesso!", "Compra Fechada", JOptionPane.INFORMATION_MESSAGE);
-                view.msgFinal("ID Compra = " + c.getIdCompra() + "\nData: " + DataUtil.ConverterDataEmTexto(c.getDataDaCompra()) + "\nValor Total da Compra = " + c.calcValorTotal(), "Compra Fechada", JOptionPane.INFORMATION_MESSAGE);
-                view.dispose();
+            } catch (NumberFormatException ex) {
+                view.msgFinal("Erro no preenchimento dos campos!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
 
         }
@@ -105,7 +82,32 @@ public class ItemCompraController {
 
     }
 
-    private void addItem(){
+    //açao de finalizar compra
+    class FinalizarListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            if (c.calcValorTotal() <= 0) {
+                view.showMessage("Adicione itens para finalizar a compra!");
+            } else {
+                int resposta = JOptionPane.showConfirmDialog(null, "Confirmar finalização da compra?", "Finalizar Compra", JOptionPane.YES_NO_OPTION);
+
+                if (resposta == JOptionPane.YES_OPTION) {
+                    //finalizarCompra();
+                    view.msgFinal("Compra finalizada com sucesso!", "Compra Fechada", JOptionPane.INFORMATION_MESSAGE);
+                    FinalizarCompraView view = new FinalizarCompraView();;
+                    FinalizarCompraController controller = new FinalizarCompraController(view, c, idCompra);
+                    view.setVisible(true);
+                } 
+
+            }
+
+        }
+
+    }
+
+    private void addItem() {
         ItemCompra item = new ItemCompra();
         item.setCompra(c);
         item.setProduto(getProdutoSelecionado());
@@ -193,20 +195,20 @@ public class ItemCompraController {
         view.getPopup().add(itemExcluir);
     }
 
-    public Produto getProdutoSelecionado() {
+    private Produto getProdutoSelecionado() {
         return this.produtos.get(view.getCombo().getSelectedIndex());
     }
 
     private void finalizarCompra() {
-        //this.c = new Compra();
+        this.c = new Compra();
         CompraDAO dao = new CompraDAO();
         dao.finalizarCompra(c);
         c.setIdCompra(dao.getIdCompra());
         Calendar cal = Calendar.getInstance();
         cal.setTime(dao.getDataCompra());
         c.setDataDaCompra(cal);
-        
-        System.out.println(c.getIdCompra());
+
+        this.idCompra = c.getIdCompra();
     }
 
     public Vector<ItemCompra> getLista() {

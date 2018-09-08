@@ -58,6 +58,11 @@ public class Compra {
     public void setDataDaCompra(Calendar dataDaCompra) {
         this.dataDaCompra = dataDaCompra;
     }
+
+    @Override
+    public String toString() {
+        return "Compra{" + "idCompra=" + idCompra + ", dataDaCompra=" + dataDaCompra + ", itens=" + itens.toString() + '}';
+    }
     
     
     

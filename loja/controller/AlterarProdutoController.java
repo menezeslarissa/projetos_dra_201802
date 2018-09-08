@@ -49,6 +49,7 @@ public class AlterarProdutoController {
             if (dao.alteraProduto(modelProduto)) {
                 viewProd.showMessage("Produto alterado com sucesso!");
                 carregarTabela();
+                viewProd.dispose();
             } else {
                 viewProd.showMessage("Erro ao alterar produto!");
             }
